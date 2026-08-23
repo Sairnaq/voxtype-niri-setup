@@ -1,0 +1,52 @@
+# Voxtype Configuration for CachyOS / Niri / Noctalia
+# Optimized for Wayland + Quickshell Capsule OSD + VAD
+
+state_file = "auto"
+engine = "whisper"
+
+[hotkey]
+# Internal raw-input listener disabled so Niri's keybinding controls hold threshold
+enabled = false
+key = "HOME"
+mode = "push_to_talk"
+
+[audio]
+device = "default"
+sample_rate = 16000
+max_duration_secs = 60
+pause_media = true
+
+[vad]
+# Voice Activity Detection: waits for actual voice before transcribing
+enabled = true
+threshold = 0.5
+min_speech_duration_ms = 200
+backend = "auto"
+
+[audio.feedback]
+# Muted silent operation
+enabled = false
+theme = "subtle"
+volume = 0.5
+
+[whisper]
+# Default local model (base.en is fast and lightweight)
+model = "base.en"
+language = "en"
+translate = false
+mode = "local"
+
+[output]
+mode = "type"
+fallback_to_clipboard = true
+type_delay_ms = 1
+
+[osd]
+enabled = true
+frontend = "quickshell"
+position = "bottom-center"
+width_px = 320
+height_px = 52
+margin_px = 24
+top_margin = 0.85
+opacity = 0.95

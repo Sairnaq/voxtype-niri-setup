@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""Voxtype Hold-Threshold Controller.
+
+Ensures the user must hold the key down for a configurable delay (default: 350ms)
+before the recording prompt and microphone activate.
+"""
+
+import os
+import signal
+import subprocess
+import sys
+
+STATE_DIR = f"/run/user/{os.getuid()}/voxtype"
+os.makedirs(STATE_DIR, exist_ok=True)
+PID_FILE = os.path.join(STATE_DIR, "hold_wait.pid")
+ACTIVE_FILE = os.path.join(STATE_DIR, "is_recording")
+
+# Hold threshold in seconds before recording starts (350ms)
+HOLD_DELAY_SEC = 0.35
+
+action = sys.argv[1] if len(sys.argv) > 1 else "press"
+
+if action == "press":
+    # If already active or waiting, ignore repeated key repeat events
+    if os.path.exists(ACTIVE_FILE) or os.path.exists(PID_FILE):
+        sys.exit(0)
+
+    # Spawn background delayed worker
+    worker_cmd = f"sleep {HOLD_DELAY_SEC} && voxtype record start && touch {ACTIVE_FILE}"
+    proc = subprocess.Popen(
+        ["bash", "-c", worker_cmd],
+        preexec_fn=os.setsid,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    with open(PID_FILE, "w") as f:
+        f.write(str(proc.pid))
+
+elif action == "release":
+    # Cancel any pending start timer
+    if os.path.exists(PID_FILE):
+        try:
+            with open(PID_FILE) as f:
+                pid = int(f.read().strip())
+            os.killpg(os.getpgid(pid), signal.SIGTERM)
+        except Exception:
+            pass
+        try:
+            os.remove(PID_FILE)
+        except Exception:
+            pass
+
+    # If recording was started and is active, stop and transcribe
+    if os.path.exists(ACTIVE_FILE):
+        try:
+            os.remove(ACTIVE_FILE)
+        except Exception:
+            pass
+        subprocess.run(["voxtype", "record", "stop"], check=False)
