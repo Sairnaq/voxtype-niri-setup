@@ -18,8 +18,7 @@ Transcribe your speech **100% offline and locally** with zero cloud latency usin
 
 ## 🚀 Quick 1-Click Install
 
-Clone this repository and run the installer:
-
+### Option A: Clone & Run
 ```bash
 git clone https://github.com/Sairnaq/voxtype-niri-setup.git
 cd voxtype-niri-setup
@@ -27,6 +26,17 @@ cd voxtype-niri-setup
 ```
 
 ---
+
+### Option B: Using Claude Code / Claude CLI (Zero Effort)
+If your friend uses **Claude CLI** (`claude`), they can literally copy-paste this one prompt into Claude:
+
+```text
+Please install and set up voxtype from https://github.com/Sairnaq/voxtype-niri-setup.git, run the install.sh script, and add the Home key push-to-talk binding to my ~/.config/niri/config.kdl.
+```
+*Claude CLI will clone it, install all dependencies, enable the systemd service, and add the keybindings to Niri automatically!*
+
+---
+
 
 ## ⌨️ Compositor Keybindings
 
