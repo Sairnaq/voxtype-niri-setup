@@ -9,31 +9,33 @@ Transcribe your speech **100% offline and locally** with zero cloud latency usin
 ## ✨ Features
 
 * 🚀 **100% Offline & Private:** Powered locally by OpenAI Whisper (`base.en` / `small.en` / `medium.en`). Zero telemetry, zero cloud dependencies.
-* 💊 **Rounded Quickshell Capsule OSD:** Replaces the clunky default box popup with a modern, smooth, frosted capsule pill with live waveform meters and instant snap-away dismissal.
+* 💊 **Rounded Frosted Glass Capsule OSD:** Replaces the boxy default popup with a modern, smooth, frosted capsule pill with live waveform meters and instant snap-away dismissal.
+* 🎨 **Universal Dynamic Palette Sync:** Automatically inherits the installer's active desktop/terminal colors (**Omarchy**, **Noctalia**, **Matugen**, **Wallust**, **Pywal**, **Kitty**) in real time!
+* 🤖 **Automatic Compositor Detection:** `./install.sh` automatically detects if you're running **Niri**, **Hyprland**, or **Sway**, injects the `Home` keybind, and applies compositor Gaussian blur rules without requiring manual editing!
 * ⏱️ **Deliberate Hold Threshold (~350ms):** Tapping the `Home` key won't accidentally trigger recording; holding it down initiates recording, and letting go instantly pastes your speech.
 * 🔇 **Silent & Clean:** Annoying beeps and feedback noises muted out-of-the-box.
-* 🎯 **Dynamic Theme Colors:** Automatically synchronizes its frosted glass tint and wave colors with your active desktop theme.
 
 ---
 
 ## 🚀 Quick 1-Click Install
 
-### Option A: Clone & Run
+### Option A: Clone & Run (Fully Automated)
 ```bash
 git clone https://github.com/Sairnaq/voxtype-niri-setup.git
 cd voxtype-niri-setup
 ./install.sh
 ```
+*The installer automatically downloads the Whisper AI model, configures your compositor (Niri/Hyprland/Sway), enables the systemd service, and sets up the frosted pill OSD!*
 
 ---
 
 ### Option B: Using Claude Code / Claude CLI (Zero Effort)
-If your friend uses **Claude CLI** (`claude`), they can literally copy-paste this one prompt into Claude:
+If your friend uses **Claude CLI** (`claude`), they can simply run:
 
 ```text
-Please install and set up voxtype from https://github.com/Sairnaq/voxtype-niri-setup.git, run the install.sh script, and add the Home key push-to-talk binding to my ~/.config/niri/config.kdl.
+Please install and set up voxtype from https://github.com/Sairnaq/voxtype-niri-setup.git and run ./install.sh.
 ```
-*Claude CLI will clone it, install all dependencies, enable the systemd service, and add the keybindings to Niri automatically!*
+
 
 ---
 

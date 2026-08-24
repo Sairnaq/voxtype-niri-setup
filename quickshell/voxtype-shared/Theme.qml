@@ -7,8 +7,8 @@ import Quickshell.Io
 QtObject {
     id: theme
 
-    // Dynamic Omarchy theme color properties (0.70 alpha for frosted glass blur)
-    property color bgColor: Qt.rgba(0.08, 0.10, 0.13, 0.70)
+    // Dynamic theme color properties (frosted glass 0.60 alpha)
+    property color bgColor: Qt.rgba(0.06, 0.08, 0.10, 0.60)
     property color accentColor: "#7fa961"
     property color idleColor: "#abb2bf"
     property color recordingColor: accentColor
@@ -32,46 +32,83 @@ QtObject {
     property real waveformGain: 10.0
     property real meterFloorDbfs: -60.0
 
-    // Dynamic Color Watcher: Reads active Omarchy colors in real time
+    // Universal Dynamic Color Resolver (Omarchy, Pywal, Matugen, Wallust, Noctalia, Kitty)
     property var colorWatcher: Process {
         id: colorProc
-        command: ["bash", "-c", "cat $HOME/.local/state/omarchy/current/theme/colors.toml 2>/dev/null"]
+        command: [
+            "python3", "-c",
+            "import json, os\n" +
+            "res = {'accent': '#7fa961', 'background': '#00070d', 'foreground': '#ecf0e9', 'green': '#71ad43'}\n" +
+            "om = os.path.expanduser('~/.local/state/omarchy/current/theme/colors.toml')\n" +
+            "if os.path.exists(om):\n" +
+            "    try:\n" +
+            "        with open(om) as f:\n" +
+            "            for l in f:\n" +
+            "                if '=' in l:\n" +
+            "                    k, v = [x.strip().strip('\"\'') for x in l.split('=', 1)]\n" +
+            "                    if k == 'accent': res['accent'] = v\n" +
+            "                    elif k == 'background': res['background'] = v\n" +
+            "                    elif k == 'foreground': res['foreground'] = v\n" +
+            "                    elif k in ('bright_green', 'green'): res['green'] = v\n" +
+            "        print(json.dumps(res)); exit(0)\n" +
+            "    except Exception: pass\n" +
+            "wal = os.path.expanduser('~/.cache/wal/colors.json')\n" +
+            "if os.path.exists(wal):\n" +
+            "    try:\n" +
+            "        with open(wal) as f:\n" +
+            "            d = json.load(f)\n" +
+            "            if 'special' in d:\n" +
+            "                res['background'] = d['special'].get('background', res['background'])\n" +
+            "                res['foreground'] = d['special'].get('foreground', res['foreground'])\n" +
+            "            if 'colors' in d:\n" +
+            "                res['accent'] = d['colors'].get('color4', res['accent'])\n" +
+            "                res['green'] = d['colors'].get('color2', res['green'])\n" +
+            "        print(json.dumps(res)); exit(0)\n" +
+            "    except Exception: pass\n" +
+            "for p in ['~/.config/matugen/colors.json', '~/.cache/matugen/colors.json', '~/.config/wallust/colors.json', '~/.config/noctalia/colors.json']:\n" +
+            "    exp = os.path.expanduser(p)\n" +
+            "    if os.path.exists(exp):\n" +
+            "        try:\n" +
+            "            with open(exp) as f:\n" +
+            "                d = json.load(f)\n" +
+            "                if 'primary' in d: res['accent'] = d['primary']\n" +
+            "                elif 'accent' in d: res['accent'] = d['accent']\n" +
+            "                if 'background' in d: res['background'] = d['background']\n" +
+            "                elif 'surface' in d: res['background'] = d['surface']\n" +
+            "                if 'on_surface' in d: res['foreground'] = d['on_surface']\n" +
+            "                elif 'foreground' in d: res['foreground'] = d['foreground']\n" +
+            "            print(json.dumps(res)); exit(0)\n" +
+            "        except Exception: pass\n" +
+            "print(json.dumps(res))"
+        ]
         running: true
         stdout: StdioCollector {
             waitForEnd: true
             onStreamFinished: {
                 if (!text) return
-                var lines = text.split("\n")
-                var colMap = {}
-                for (var i = 0; i < lines.length; i++) {
-                    var l = lines[i].trim()
-                    if (l.indexOf("=") !== -1) {
-                        var parts = l.split("=")
-                        var k = parts[0].trim()
-                        var v = parts[1].trim().replace(/[\"']/g, "")
-                        colMap[k] = v
+                try {
+                    var data = JSON.parse(text)
+                    if (data.accent) {
+                        theme.accentColor = data.accent
+                        theme.recordingColor = data.accent
+                        theme.waveformColor = data.accent
                     }
-                }
-                if (colMap.accent) {
-                    theme.accentColor = colMap.accent
-                    theme.recordingColor = colMap.accent
-                    theme.waveformColor = colMap.accent
-                }
-                if (colMap.background) {
-                    theme.bgColor = Qt.rgba(Qt.color(colMap.background).r, Qt.color(colMap.background).g, Qt.color(colMap.background).b, 0.70)
-                }
-                if (colMap.foreground) {
-                    theme.textColor = colMap.foreground
-                }
-                if (colMap.bright_green || colMap.green) {
-                    theme.streamingColor = colMap.bright_green || colMap.green
-                }
+                    if (data.background) {
+                        var c = Qt.color(data.background)
+                        theme.bgColor = Qt.rgba(c.r, c.g, c.b, 0.60)
+                    }
+                    if (data.foreground) {
+                        theme.textColor = data.foreground
+                    }
+                    if (data.green) {
+                        theme.streamingColor = data.green
+                    }
+                } catch (e) {}
             }
         }
     }
 
-
-    // Check on state changes or periodic refresh
+    // Dynamic Refresh Timer (updates colors when theme changes)
     property var stateWatch: Timer {
         interval: 2000
         repeat: true
