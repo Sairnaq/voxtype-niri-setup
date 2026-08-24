@@ -132,12 +132,13 @@ PanelWindow {
         id: card
         anchors.fill: parent
         radius: height / 2
-        color: VT.Theme.bgColor
+        color: Qt.rgba(0.06, 0.08, 0.10, 0.55)
         border.width: 1.5
         border.color: panel.stateColor
         opacity: (panel.daemonState === "recording" && panel.audio && panel.audio.running && !panel.audio.vad)
                  ? 0.78 : 1.0
         Behavior on opacity { NumberAnimation { duration: 120 } }
+
 
 
         Row {
