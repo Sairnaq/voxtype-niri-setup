@@ -35,11 +35,12 @@ PanelWindow {
     // Instant snap-away: only visible while actively recording speech
     visible: daemonState === "recording"
     anchors {
-
-        top: true
         bottom: true
-        left: true
-        right: true
+    }
+    width: 320
+    height: 52
+    margins {
+        bottom: 48
     }
     color: "transparent"
 
@@ -48,15 +49,6 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
 
-    // Subtract the whole panel area from the input region, so pointer
-    // events fall through to windows underneath instead of getting
-    // eaten by the transparent fullscreen-anchored surface.
-    mask: Region {
-        intersection: Intersection.Subtract
-        x: 0; y: 0
-        width: panel.width
-        height: panel.height
-    }
 
     // Per-state tint, shared by icon + card border so a Hyprland user
     // can read the daemon's state from screen-edge color alone.
@@ -138,11 +130,7 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: 320
-        height: 52
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 48
+        anchors.fill: parent
         radius: height / 2
         color: VT.Theme.bgColor
         border.width: 1.5
@@ -150,6 +138,7 @@ PanelWindow {
         opacity: (panel.daemonState === "recording" && panel.audio && panel.audio.running && !panel.audio.vad)
                  ? 0.78 : 1.0
         Behavior on opacity { NumberAnimation { duration: 120 } }
+
 
         Row {
             anchors.fill: parent

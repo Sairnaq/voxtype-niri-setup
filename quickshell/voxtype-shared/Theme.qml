@@ -7,8 +7,8 @@ import Quickshell.Io
 QtObject {
     id: theme
 
-    // Dynamic Omarchy theme color properties
-    property color bgColor: Qt.rgba(0.08, 0.10, 0.13, 0.88)
+    // Dynamic Omarchy theme color properties (0.70 alpha for frosted glass blur)
+    property color bgColor: Qt.rgba(0.08, 0.10, 0.13, 0.70)
     property color accentColor: "#7fa961"
     property color idleColor: "#abb2bf"
     property color recordingColor: accentColor
@@ -58,7 +58,7 @@ QtObject {
                     theme.waveformColor = colMap.accent
                 }
                 if (colMap.background) {
-                    theme.bgColor = Qt.rgba(Qt.color(colMap.background).r, Qt.color(colMap.background).g, Qt.color(colMap.background).b, 0.90)
+                    theme.bgColor = Qt.rgba(Qt.color(colMap.background).r, Qt.color(colMap.background).g, Qt.color(colMap.background).b, 0.70)
                 }
                 if (colMap.foreground) {
                     theme.textColor = colMap.foreground
@@ -69,6 +69,7 @@ QtObject {
             }
         }
     }
+
 
     // Check on state changes or periodic refresh
     property var stateWatch: Timer {
